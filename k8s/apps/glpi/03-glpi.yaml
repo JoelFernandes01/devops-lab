@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: glpi
-        image: ghcr.io/linuxserver/glpi:latest
+        image: nginx:alpine
         ports:
         - containerPort: 80
         env:
