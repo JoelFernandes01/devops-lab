@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: glpi
-        image: nginx:alpine
+        image: tiredofit/glpi:latest
         ports:
         - containerPort: 80
         env:
