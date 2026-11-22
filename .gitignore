@@ -1,0 +1,6 @@
+*.log
+.env
+*.secret
+.DS_Store
+.terraform/
+*.tfstate*
