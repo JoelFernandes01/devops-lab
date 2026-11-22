@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glpi-mariadb
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glpi-mariadb
+  template:
+    metadata:
+      labels:
+        app: glpi-mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: {{ .Values.mariadb.image }}
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: {{ .Values.mariadb.rootPassword }}
+        - name: MARIADB_DATABASE
+          value: {{ .Values.mariadb.database }}
+        - name: MARIADB_USER
+          value: {{ .Values.mariadb.user }}
+        - name: MARIADB_PASSWORD
+          value: {{ .Values.mariadb.password }}
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: glpi-mariadb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glpi-mariadb
+  namespace: default
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: glpi-mariadb

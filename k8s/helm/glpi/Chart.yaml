@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: glpi
+description: Helm Chart para GLPI com MariaDB e NFS no Kubernetes
+type: application
+version: 1.0.0
+appVersion: "10.0"

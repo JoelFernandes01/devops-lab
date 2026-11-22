@@ -1,0 +1,22 @@
+---
+global:
+  domain: glpi.nverse.local
+  nfsServer: 10.0.39.75
+
+mariadb:
+  image: mariadb:10.11
+  rootPassword: DevopsRootPassword123!
+  database: glpidb
+  user: glpi
+  password: GlpiUserPassword123!
+  storageSize: 5Gi
+  nfsPath: /nfs/k8s/mariadb-data
+
+glpi:
+  image: glpi/glpi:latest
+  storageSize: 10Gi
+  nfsPath: /nfs/k8s/glpi-data
+
+ingress:
+  className: traefik
+  host: glpi.nverse.local
