@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-glpi-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs-client
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glpi-mariadb
+  namespace: default
+  labels:
+    app: glpi-mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glpi-mariadb
+  template:
+    metadata:
+      labels:
+        app: glpi-mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.11
+        envFrom:
+        - secretRef:
+            name: glpi-secrets
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mariadb-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mariadb-data
+        persistentVolumeClaim:
+          claimName: mariadb-glpi-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glpi-mariadb
+  namespace: default
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: glpi-mariadb
