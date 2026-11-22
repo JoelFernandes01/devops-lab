@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: glpi
-        image: indiehosters/glpi:latest
+        image: glpi/glpi:latest
         ports:
         - containerPort: 80
         env:
