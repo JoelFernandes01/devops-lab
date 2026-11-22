@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: glpi
-        image: linuxserver/glpi:latest
+        image: ghcr.io/linuxserver/glpi:latest
         ports:
         - containerPort: 80
         env:
