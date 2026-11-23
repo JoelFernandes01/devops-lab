@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-web
+  template:
+    metadata:
+      labels:
+        app: zabbix-web
+    spec:
+      containers:
+      - name: zabbix-web
+        image: {{ .Values.zabbix.image }}
+        ports:
+        - containerPort: {{ .Values.zabbix.port }}
+        env:
+        - name: DB_SERVER_HOST
+          value: "zabbix-db"
+        - name: MYSQL_DATABASE
+          value: {{ .Values.db.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.db.user }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.db.password }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-web-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: {{ .Values.zabbix.port }}
+  selector:
+    app: zabbix-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-db
+  template:
+    metadata:
+      labels:
+        app: zabbix-db
+    spec:
+      containers:
+      - name: mariadb
+        image: {{ .Values.db.image }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{ .Values.db.rootPassword }}
+        - name: MYSQL_DATABASE
+          value: {{ .Values.db.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.db.user }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.db.password }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-db
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: zabbix-db
