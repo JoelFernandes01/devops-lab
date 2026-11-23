@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: glpi-app
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -19,6 +18,17 @@ spec:
         image: {{ .Values.glpi.image }}
         ports:
         - containerPort: 80
+          command: ["/bin/bash", "-c"]
+        args:
+        - |
+          # 1. Aguarda o MariaDB aceitar conexões e realiza a instalação automática do banco
+          until php bin/console db:install --db-host=glpi-mariadb --db-name={{ .Values.mariadb.database }} --db-user=root --db-password={{ .Values.mariadb.rootPassword }} --force --no-interaction; do
+            echo "Aguardando o MariaDB inicializar..."
+            sleep 5
+          done
+          
+          # 2. Inicia o servidor web do GLPI
+          apache2-foreground
         volumeMounts:
         - name: glpi-storage
           mountPath: /var/www/html
@@ -31,7 +41,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: glpi-svc
-  namespace: default
 spec:
   ports:
   - port: 80
