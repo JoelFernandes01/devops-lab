@@ -5,11 +5,11 @@ ingress:
   host: monitoring.nverse.local
 
 zabbixWeb:
-  image: zabbix/zabbix-web-nginx-mysql:latest
+  image: zabbix/zabbix-web-nginx-mysql:alpine-latest
   port: 8080
 
 zabbixServer:
-  image: zabbix/zabbix-server-mysql:latest
+  image: zabbix/zabbix-server-mysql:alpine-latest
   port: 10051
 
 db:
