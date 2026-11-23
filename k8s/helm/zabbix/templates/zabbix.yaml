@@ -1,44 +1,17 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: zabbix-web
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: zabbix-web
-  template:
-    metadata:
-      labels:
-        app: zabbix-web
-    spec:
-      containers:
-      - name: zabbix-web
-        image: {{ .Values.zabbix.image }}
-        ports:
-        - containerPort: {{ .Values.zabbix.port }}
-        env:
-        - name: DB_SERVER_HOST
-          value: "zabbix-db"
-        - name: MYSQL_DATABASE
-          value: {{ .Values.db.database }}
-        - name: MYSQL_USER
-          value: {{ .Values.db.user }}
-        - name: MYSQL_PASSWORD
-          value: {{ .Values.db.password }}
----
+# 1. PERSISTENCIA DE DADOS (MARIADB)
 apiVersion: v1
-kind: Service
+kind: PersistentVolumeClaim
 metadata:
-  name: zabbix-web-svc
+  name: zabbix-db-pvc
 spec:
-  ports:
-  - port: 80
-    targetPort: {{ .Values.zabbix.port }}
-  selector:
-    app: zabbix-web
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.db.storageSize }}
 ---
+# 2. BANCO DE DADOS (MARIADB)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,6 +38,15 @@ spec:
           value: {{ .Values.db.user }}
         - name: MYSQL_PASSWORD
           value: {{ .Values.db.password }}
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: zabbix-db-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: zabbix-db-data
+        persistentVolumeClaim:
+          claimName: zabbix-db-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -76,3 +58,91 @@ spec:
     targetPort: 3306
   selector:
     app: zabbix-db
+---
+# 3. ZABBIX SERVER (CRIA AS TABELAS E PROCESSA METRICAS)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-server
+  template:
+    metadata:
+      labels:
+        app: zabbix-server
+    spec:
+      containers:
+      - name: zabbix-server
+        image: {{ .Values.zabbixServer.image }}
+        env:
+        - name: DB_SERVER_HOST
+          value: "zabbix-db"
+        - name: MYSQL_DATABASE
+          value: {{ .Values.db.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.db.user }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.db.password }}
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{ .Values.db.rootPassword }}
+        ports:
+        - containerPort: {{ .Values.zabbixServer.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-server
+spec:
+  ports:
+  - port: 10051
+    targetPort: {{ .Values.zabbixServer.port }}
+  selector:
+    app: zabbix-server
+---
+# 4. ZABBIX WEB (INTERFACE NGINX)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-web
+  template:
+    metadata:
+      labels:
+        app: zabbix-web
+    spec:
+      containers:
+      - name: zabbix-web
+        image: {{ .Values.zabbixWeb.image }}
+        env:
+        - name: ZBX_SERVER_HOST
+          value: "zabbix-server"
+        - name: DB_SERVER_HOST
+          value: "zabbix-db"
+        - name: MYSQL_DATABASE
+          value: {{ .Values.db.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.db.user }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.db.password }}
+        - name: PHP_TZ
+          value: "America/Sao_Paulo"
+        ports:
+        - containerPort: {{ .Values.zabbixWeb.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-web-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: {{ .Values.zabbixWeb.port }}
+  selector:
+    app: zabbix-web

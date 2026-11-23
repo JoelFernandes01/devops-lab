@@ -4,9 +4,13 @@ ingress:
   className: "traefik"
   host: monitoring.nverse.local
 
-zabbix:
+zabbixWeb:
   image: zabbix/zabbix-web-nginx-mysql:latest
   port: 8080
+
+zabbixServer:
+  image: zabbix/zabbix-server-mysql:latest
+  port: 10051
 
 db:
   image: mariadb:10.11
@@ -14,3 +18,5 @@ db:
   user: zabbix
   password: zabbix_password
   rootPassword: root_password
+  storageSize: 5Gi
+
