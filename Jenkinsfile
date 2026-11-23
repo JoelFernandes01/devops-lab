@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
@@ -10,6 +9,7 @@ pipeline {
         stage('Validar Helm Chart') {
             steps {
                 sh 'helm lint k8s/helm/glpi'
+                sh 'helm lint k8s/helm/nginx'
             }
         }
     }
