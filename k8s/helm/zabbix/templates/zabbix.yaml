@@ -169,7 +169,7 @@ spec:
         env:
         - name: ZBX_SERVER_HOST
           value: "0.0.0.0/0"
-        - name: ZBX_ACTIVESERVER
+        - name: ZBX_ACTIVE_SERVER
           value: "zabbix-server"
         - name: ZBX_HOSTNAME
           value: "Zabbix server"
