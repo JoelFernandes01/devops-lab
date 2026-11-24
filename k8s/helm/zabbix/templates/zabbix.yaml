@@ -168,7 +168,9 @@ spec:
         image: {{ .Values.zabbixAgent.image }}
         env:
         - name: ZBX_SERVER_HOST
-          value: "zabbix-server"
+          value: "0.0.0.0/0"
+        - name: ZBX_HOSTNAME
+          value: "Zabbix server"
         ports:
         - containerPort: {{ .Values.zabbixAgent.port }}
 ---
