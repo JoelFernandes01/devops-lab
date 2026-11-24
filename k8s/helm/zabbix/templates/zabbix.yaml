@@ -168,7 +168,7 @@ spec:
         image: {{ .Values.zabbixAgent.image }}
         env:
         - name: ZBX_SERVER_HOST
-          value: "zabbix-server"
+          value: "0.0.0.0/0"
         - name: ZBX_ACTIVESERVER
           value: "zabbix-server"
         - name: ZBX_HOSTNAME
