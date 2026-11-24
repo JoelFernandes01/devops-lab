@@ -12,6 +12,10 @@ zabbixServer:
   image: zabbix/zabbix-server-mysql:alpine-latest
   port: 10051
 
+zabbixAgent:
+  image: zabbix/zabbix-agent2:alpine-latest
+  port: 10050
+  
 db:
   image: mariadb:10.11
   database: zabbix
