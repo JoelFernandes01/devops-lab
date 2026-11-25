@@ -148,6 +148,7 @@ spec:
     app: zabbix-web
 
 ---
+---
 # 5. ZABBIX AGENT
 apiVersion: apps/v1
 kind: Deployment
@@ -168,8 +169,8 @@ spec:
         image: {{ .Values.zabbixAgent.image }}
         env:
         - name: ZBX_SERVER_HOST
-          value: "zabbix-server"
-        - name: ZBX_ACTIVESERVERS
+          value: "0.0.0.0/0"
+        - name: ZBX_SERVER_ACTIVE
           value: "zabbix-server"
         - name: ZBX_HOSTNAME
           value: "Zabbix server"
