@@ -29,6 +29,13 @@ spec:
       containers:
       - name: mariadb
         image: {{ .Values.db.image }}
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: {{ .Values.db.rootPassword }}
@@ -77,6 +84,13 @@ spec:
       containers:
       - name: zabbix-server
         image: {{ .Values.zabbixServer.image }}
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         env:
         - name: DB_SERVER_HOST
           value: "zabbix-db"
@@ -120,6 +134,13 @@ spec:
       containers:
       - name: zabbix-web
         image: {{ .Values.zabbixWeb.image }}
+        resources:
+          requests:
+            cpu: "150m"
+            memory: "256Mi"
+          limits:
+            cpu: "300m"
+            memory: "512Mi"
         env:
         - name: ZBX_SERVER_HOST
           value: "zabbix-server"
@@ -148,7 +169,6 @@ spec:
     app: zabbix-web
 
 ---
----
 # 5. ZABBIX AGENT
 apiVersion: apps/v1
 kind: Deployment
@@ -165,15 +185,22 @@ spec:
         app: zabbix-agent
     spec:
       containers:
-      - name: zabbix-agent
-        image: {{ .Values.zabbixAgent.image }}
-        env:
-        - name: ZBX_SERVER_HOST
-          value: "zabbix-server"
-        - name: ZBX_HOSTNAME
-          value: "Zabbix server"
-        ports:
-        - containerPort: {{ .Values.zabbixAgent.port }}
+        - name: zabbix-agent
+          image: {{ .Values.zabbixAgent.image }}
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          env:
+            - name: ZBX_SERVER_HOST
+              value: "zabbix-server"
+            - name: ZBX_HOSTNAME
+              value: "Zabbix server"
+          ports:
+            - containerPort: {{ .Values.zabbixAgent.port }}
 ---
 apiVersion: v1
 kind: Service
@@ -181,7 +208,7 @@ metadata:
   name: zabbix-agent
 spec:
   ports:
-  - port: 10050
-    targetPort: {{ .Values.zabbixAgent.port }}
+    - port: 10050
+      targetPort: {{ .Values.zabbixAgent.port }}
   selector:
     app: zabbix-agent
