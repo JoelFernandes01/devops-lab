@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,6 +26,9 @@ spec:
           value: {{ .Values.grafana.adminUser | quote }}
         - name: GF_SECURITY_ADMIN_PASSWORD
           value: {{ .Values.grafana.adminPassword | quote }}
+        - name: GF_INSTALL_PLUGINS
+          value: "alexanderzobnin-zabbix-app"
+
         volumeMounts:
         - name: datasources
           mountPath: /etc/grafana/provisioning/datasources
