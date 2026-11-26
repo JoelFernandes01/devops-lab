@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:10.4.0
+        image: grafana/grafana:11.3.0
         ports:
         - containerPort: 3000
         env:
@@ -27,7 +27,7 @@ spec:
         - name: GF_SECURITY_ADMIN_PASSWORD
           value: {{ .Values.grafana.adminPassword | quote }}
         - name: GF_INSTALL_PLUGINS
-          value: "alexanderzobnin-zabbix-app"
+          value: "alexanderzobnin-zabbix-app 4.4.5"
 
         volumeMounts:
         - name: datasources
