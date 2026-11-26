@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'alpine/helm:latest'
-            args '-u root'
-        }
-    }
+    agent any
 
     environment {
         CHART_PATH = 'k8s/helm/monitoring'
