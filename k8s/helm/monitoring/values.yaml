@@ -1,0 +1,23 @@
+# Configurações Globais da Stack de Monitoramento
+global:
+  namespace: monitoring
+
+grafana:
+  replicaCount: 1
+  adminUser: admin
+  adminPassword: admin123
+  domain: grafana.nverse.local
+  nodePort: 32000
+
+prometheus:
+  replicaCount: 1
+  domain: prometheus.nverse.local
+  scrapeInterval: 15s
+
+alertmanager:
+  replicaCount: 1
+  domain: alertmanager.nverse.local
+
+zabbixIntegration:
+  enabled: true
+  url: "http://zabbix-web-service.monitoring.svc.cluster.local"
