@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zabbix-service-account
+  namespace: {{ .Values.global.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: zabbix-cluster-role
+rules:
+  - apiGroups: ["", "apps", "batch", "extensions", "networking.k8s.io", "autoscaling"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/version", "/healthz", "/livez", "/readyz", "/metrics"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: zabbix-cluster-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: zabbix-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: zabbix-service-account
+    namespace: {{ .Values.global.namespace }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zabbix-service-account-token
+  namespace: {{ .Values.global.namespace }}
+  annotations:
+    kubernetes.io/service-account.name: zabbix-service-account
+type: kubernetes.io/service-account.token
