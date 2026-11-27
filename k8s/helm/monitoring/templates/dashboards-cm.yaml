@@ -88,7 +88,7 @@ data:
           "targets": [
             {
               "expr": "100 - (rate(node_cpu_seconds_total{mode='idle'}[5m]) * 100)",
-              "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
+              "legendFormat": "{{ "{{" }}instance{{ "}}" }}",
               "refId": "A"
             }
           ]
@@ -102,7 +102,7 @@ data:
           "targets": [
             {
               "expr": "sum(container_memory_working_set_bytes{pod!=''}) by (pod)",
-              "legendFormat": "{{ '{{' }}pod{{ '}}' }}",
+              "legendFormat": "{{ "{{" }}pod{{ "}}" }}",
               "refId": "A"
             }
           ]
