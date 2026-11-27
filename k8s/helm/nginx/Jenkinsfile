@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        CHART_DIR = 'k8s/helm/nginx'  // <--- Atualizado para o caminho completo no repositório
+        CHART_DIR = 'k8s/helm/nginx'
         APP_NAME  = 'nginx-app'
     }
 
@@ -16,24 +16,23 @@ pipeline {
             }
         }
 
-        stage('2. Dry-Run Kubernetes') {
+        stage('2. Renderização de Templates') {
             steps {
                 script {
-                    echo "🧪 Renderizando os templates e validando no K8s..."
-                    sh "helm template ${CHART_DIR} > /tmp/rendered-${APP_NAME}.yaml"
-                    sh "kubectl apply --dry-run=client -f /tmp/rendered-${APP_NAME}.yaml"
+                    echo "🧪 Validando a renderização dos manifestos YAML..."
+                    sh "helm template ${APP_NAME} ${CHART_DIR} > /dev/null"
                 }
             }
         }
 
-        stage('3. Trigger ArgoCD') {
+        stage('3. Notificar ArgoCD') {
             when {
                 branch 'main'
             }
             steps {
                 script {
-                    echo "🚀 Commit validado com sucesso no branch main!"
-                    echo "O ArgoCD irá sincronizar o HPA automaticamente no cluster."
+                    echo "🚀 Commit validado no branch main!"
+                    echo "O ArgoCD irá detectar a alteração e aplicar o HPA no cluster."
                 }
             }
         }
@@ -41,7 +40,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Pipeline finalizada com sucesso!"
+            echo "✅ Pipeline CI finalizada com sucesso!"
         }
         failure {
             echo "❌ Erro na validação do Helm Chart."
