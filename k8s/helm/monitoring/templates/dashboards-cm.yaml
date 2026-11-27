@@ -102,7 +102,7 @@ data:
           "targets": [
             {
               "expr": "sum(container_memory_working_set_bytes{pod!=\"\"}) by (pod)",
-              "legendFormat": "{{pod}}",
+              "legendFormat": "{{ "{{pod}}" }}",
               "refId": "A"
             }
           ]
