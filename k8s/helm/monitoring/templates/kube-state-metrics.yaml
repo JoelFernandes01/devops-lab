@@ -146,14 +146,13 @@ metadata:
   name: kube-state-metrics
   namespace: {{ .Values.global.namespace }}
 spec:
-  clusterIP: None
   ports:
   - name: http
     port: 8080
-    targetPort: http
+    targetPort: 8080
   - name: telemetry
     port: 8081
-    targetPort: telemetry
+    targetPort: 8081
   selector:
     app.kubernetes.io/name: kube-state-metrics
 ---
