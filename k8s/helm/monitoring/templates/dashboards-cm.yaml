@@ -35,7 +35,7 @@ data:
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             {
-              "expr": "sum(up{job=\"kubernetes-nodes\"})",
+              "expr": "sum(up{job='kubernetes-nodes'})",
               "refId": "A"
             }
           ]
@@ -48,7 +48,7 @@ data:
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             {
-              "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
+              "expr": "sum(kube_pod_status_phase{phase='Running'})",
               "refId": "A"
             }
           ]
@@ -61,7 +61,7 @@ data:
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             {
-              "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+              "expr": "100 - (avg(rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100)",
               "refId": "A"
             }
           ]
@@ -87,8 +87,8 @@ data:
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             {
-              "expr": "100 - (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]) * 100)",
-              "legendFormat": {{ "{{instance}}" }},
+              "expr": "100 - (rate(node_cpu_seconds_total{mode='idle'}[5m]) * 100)",
+              "legendFormat": "{{ '{{' }}instance{{ '}}' }}",
               "refId": "A"
             }
           ]
@@ -101,8 +101,8 @@ data:
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "targets": [
             {
-              "expr": "sum(container_memory_working_set_bytes{pod!=\"\"}) by (pod)",
-              "legendFormat": "{{ "{{pod}}" }}",
+              "expr": "sum(container_memory_working_set_bytes{pod!=''}) by (pod)",
+              "legendFormat": "{{ '{{' }}pod{{ '}}' }}",
               "refId": "A"
             }
           ]
@@ -125,50 +125,33 @@ data:
       "liveNow": false,
       "panels": [
         {
-          "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "id": 1,
-          "title": "Total de Hosts Monitorados (Zabbix)",
+          "title": "Status dos Agentes Zabbix (VMs)",
           "type": "stat",
           "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
           "targets": [
             {
               "group": { "filter": "/.*/" },
               "host": { "filter": "/.*/" },
-              "item": { "filter": "/.*/" },
+              "item": { "filter": "Agent ping" },
               "mode": 0,
               "refId": "A"
             }
           ]
         },
         {
-          "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
           "id": 2,
-          "title": "Tráfego de Rede (Zabbix Hosts)",
+          "title": "Uso de CPU Global por VM (Zabbix Agent)",
           "type": "timeseries",
           "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
           "targets": [
             {
-              "group": { "filter": "Linux servers" },
-              "host": { "filter": "/.*/" },
-              "item": { "filter": "/Interface .* Incoming traffic/" },
-              "mode": 0,
-              "refId": "A"
-            }
-          ]
-        },
-        {
-          "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
-          "id": 3,
-          "title": "Alertas Ativos (Zabbix)",
-          "type": "stat",
-          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "Zabbix" },
-          "targets": [
-            {
               "group": { "filter": "/.*/" },
               "host": { "filter": "/.*/" },
-              "application": { "filter": "/.*/" },
-              "trigger": { "filter": "/.*/" },
-              "mode": 2,
+              "item": { "filter": "/CPU utilization|System load/" },
+              "mode": 0,
               "refId": "A"
             }
           ]
