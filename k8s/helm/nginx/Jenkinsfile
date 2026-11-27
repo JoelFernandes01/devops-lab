@@ -2,18 +2,12 @@ pipeline {
     agent any
 
     environment {
-        CHART_DIR = 'nginx'
+        CHART_DIR = 'k8s/helm/nginx'  // <--- Atualizado para o caminho completo no repositório
         APP_NAME  = 'nginx-app'
     }
 
     stages {
-        stage('1. Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('2. Helm Lint & Sintaxe') {
+        stage('1. Helm Lint & Sintaxe') {
             steps {
                 script {
                     echo "🔍 Validando a estrutura do Helm Chart e values.yaml..."
@@ -22,24 +16,24 @@ pipeline {
             }
         }
 
-        stage('3. Dry-Run Kubernetes') {
+        stage('2. Dry-Run Kubernetes') {
             steps {
                 script {
-                    echo "🧪 Renderizando os templates (Deployment, Service, HPA) e validando no K8s..."
+                    echo "🧪 Renderizando os templates e validando no K8s..."
                     sh "helm template ${CHART_DIR} > /tmp/rendered-${APP_NAME}.yaml"
                     sh "kubectl apply --dry-run=client -f /tmp/rendered-${APP_NAME}.yaml"
                 }
             }
         }
 
-        stage('4. Notificar / Trigger ArgoCD') {
+        stage('3. Trigger ArgoCD') {
             when {
                 branch 'main'
             }
             steps {
                 script {
-                    echo "🚀 Commit aprovado no branch main!"
-                    echo "O ArgoCD (Auto-Sync) irá detectar o repositório e sincronizar o HPA no cluster automaticamente."
+                    echo "🚀 Commit validado com sucesso no branch main!"
+                    echo "O ArgoCD irá sincronizar o HPA automaticamente no cluster."
                 }
             }
         }
@@ -47,10 +41,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Pipeline finalizada com sucesso! O Helm Chart do NGINX está válido."
+            echo "✅ Pipeline finalizada com sucesso!"
         }
         failure {
-            echo "❌ Erro na validação do Helm Chart. Corrija o YAML antes do merge."
+            echo "❌ Erro na validação do Helm Chart."
         }
     }
 }
